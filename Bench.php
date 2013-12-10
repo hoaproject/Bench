@@ -96,6 +96,16 @@ class Bench implements \Iterator, \Countable {
      */
     protected $_filters     = array();
 
+    /**
+     * Init mark
+     *
+     * @access  public
+     */
+    public function __construct () {
+
+        $this->global->start();
+    }
+
 
 
     /**
@@ -340,6 +350,9 @@ class Bench implements \Iterator, \Countable {
 
         if(empty(self::$_mark))
             return '';
+
+        if($this->global->isRunning())
+            $this->global->stop();
 
         if($width < 1)
             throw new Exception(
