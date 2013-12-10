@@ -97,20 +97,9 @@ class Bench implements \Iterator, \Countable {
     protected $_filters     = array();
 
     /**
-     * Init mark
-     *
-     * @access  public
-     */
-    public function __construct () {
-
-        $this->global->start();
-    }
-
-
-
-    /**
      * Get a mark.
      * If the mark does not exist, it will be automatically create.
+     * Start the global mark on first call
      *
      * @access  public
      * @param   string  $id    The mark ID.
@@ -118,6 +107,9 @@ class Bench implements \Iterator, \Countable {
      * @throw   \Hoa\Bench\Exception
      */
     public function __get ( $id ) {
+
+        if(empty(self::$_mark))
+            $this->global->start();
 
         if(true === $this->markExists($id))
             return self::$_mark[$id];
