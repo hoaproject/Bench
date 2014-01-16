@@ -8,7 +8,7 @@
  *
  * New BSD License
  *
- * Copyright © 2007-2014, Ivan Enderlin. All rights reserved.
+ * Copyright © 2007-2013, Ivan Enderlin. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -62,7 +62,7 @@ namespace Hoa\Bench {
  *
  * @author     Ivan Enderlin <ivan.enderlin@hoa-project.net>
  * @author     Julien Clauzel <julien.clauzel@hoa-project.net>
- * @copyright  Copyright © 2007-2014 Ivan Enderlin, Julien Clauzel.
+ * @copyright  Copyright © 2007-2013 Ivan Enderlin, Julien Clauzel.
  * @license    New BSD License
  */
 
@@ -96,11 +96,10 @@ class Bench implements \Iterator, \Countable {
      */
     protected $_filters     = array();
 
-
-
     /**
      * Get a mark.
      * If the mark does not exist, it will be automatically create.
+     * Start the global mark on first call
      *
      * @access  public
      * @param   string  $id    The mark ID.
@@ -108,6 +107,9 @@ class Bench implements \Iterator, \Countable {
      * @throw   \Hoa\Bench\Exception
      */
     public function __get ( $id ) {
+
+        if(empty(self::$_mark))
+            $this->global->start();
 
         if(true === $this->markExists($id))
             return self::$_mark[$id];
@@ -340,6 +342,9 @@ class Bench implements \Iterator, \Countable {
 
         if(empty(self::$_mark))
             return '';
+
+        if($this->global->isRunning())
+            $this->global->stop();
 
         if($width < 1)
             throw new Exception(
