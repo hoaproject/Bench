@@ -69,39 +69,32 @@ namespace Hoa\Bench {
 class Bench implements \Iterator, \Countable {
 
     /**
-     * Statistic : get the result.
-     *
-     * @const int
+     * @description 'Statistic : get the result.';
      */
     const STAT_RESULT   = 0;
 
     /**
-     * Statistic : get the pourcent.
-     *
-     * @const int
+     * @description 'Statistic : get the pourcent.';
      */
     const STAT_POURCENT = 1;
 
     /**
-     * Collection of marks.
-     *
-     * @var \Hoa\Bench array
+     * @description 'Collection of marks.';
+     * @invariant _mark :array([to \Hoa\Bench\Mark], 0..);
      */
     protected static $_mark = array();
 
     /**
-     * Collection of filters.
-     *
-     * @var \Hoa\Bench array
+     * @description 'Collection of filters.';
+     * @invariant _filters: array([to \Hoa\Core\Consistency\Xcallable], 0..);
      */
     protected $_filters     = array();
 
 
 
     /**
-     * Get a mark.
-     * If the mark does not exist, it will be automatically create.
-     *
+     * @description 'Get a mark. If the mark does not exist, it will be ' .
+     *              'automatically create.';
      * @access  public
      * @param   string  $id    The mark ID.
      * @return  \Hoa\Bench\Mark
