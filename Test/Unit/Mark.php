@@ -8,7 +8,7 @@
  *
  * New BSD License
  *
- * Copyright © 2007-2014, Hoa community. All rights reserved.
+ * Copyright © 2007-2017, Hoa community. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -36,29 +36,47 @@
 
 namespace Hoa\Bench\Test\Unit;
 
+use Hoa\Bench\Mark as CUT;
 use Hoa\Test;
-use Hoa\Bench\Mark as LUT;
 
 /**
  * Class \Hoa\Bench\Test\Unit\Mark.
  *
  * Test suite of the examples in the documentation.
  *
- * @author     Hoa Community
- * @copyright  Copyright © 2007-2014 Hoa Community.
+ * @copyright  Copyright © 2007-2017 Hoa community
  * @license    New BSD License
  */
-
-class Mark extends Test\Unit\Suite {
-
-    public function case_classical ( ) {
-
+class Mark extends Test\Unit\Suite
+{
+    public function case_classical()
+    {
         $this
             ->object(
-                $mark = new LUT($id = uniqid())
+                $mark = new CUT($id = uniqid())
             )->string($mark->getId())->isEqualTo($id)
             ->boolean($mark->isRunning())->isFalse()
             ->boolean($mark->isPause())->isFalse()
+            ->assert('Start mark')
+            ->when($SUT = $mark->start())
+                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
+                ->boolean($mark->isRunning())->isTrue()
+                ->boolean($mark->isPause())->isFalse()
+            ->assert('Pause mark')
+            ->when($SUT = $mark->pause())
+                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
+                ->boolean($mark->isRunning())->isTrue()
+                ->boolean($mark->isPause())->isTrue()
+            ->assert('Restart mark after pause')
+            ->when($SUT = $mark->start())
+                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
+                ->boolean($mark->isRunning())->isTrue()
+                ->boolean($mark->isPause())->isFalse()
+            ->assert('Stop mark')
+            ->when($SUT = $mark->stop())
+                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
+                ->boolean($mark->isRunning())->isFalse()
+                ->boolean($mark->isPause())->isFalse()
             ;
     }
 }
