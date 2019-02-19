@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Hoa
  *
@@ -43,40 +45,60 @@ use Hoa\Test;
  * Class \Hoa\Bench\Test\Unit\Mark.
  *
  * Test suite of the examples in the documentation.
- *
- * @copyright  Copyright © 2007-2017 Hoa community
- * @license    New BSD License
  */
 class Mark extends Test\Unit\Suite
 {
     public function case_classical()
     {
         $this
-            ->object(
-                $mark = new CUT($id = uniqid())
-            )->string($mark->getId())->isEqualTo($id)
-            ->boolean($mark->isRunning())->isFalse()
-            ->boolean($mark->isPause())->isFalse()
+            ->given($id = 'foo')
+            ->when($mark = new CUT($id))
+            ->then
+                ->string($mark->getId())
+                    ->isEqualTo($id)
+                ->boolean($mark->isRunning())
+                    ->isFalse()
+                ->boolean($mark->isPause())
+                    ->isFalse()
+
             ->assert('Start mark')
+
             ->when($SUT = $mark->start())
-                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
-                ->boolean($mark->isRunning())->isTrue()
-                ->boolean($mark->isPause())->isFalse()
+                ->object($SUT)
+                    ->isInstanceOf(CUT::class)
+                ->boolean($mark->isRunning())
+                    ->isTrue()
+                ->boolean($mark->isPause())
+                    ->isFalse()
+
             ->assert('Pause mark')
+
             ->when($SUT = $mark->pause())
-                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
-                ->boolean($mark->isRunning())->isTrue()
-                ->boolean($mark->isPause())->isTrue()
+                ->object($SUT)
+                    ->isInstanceOf(CUT::class)
+                ->boolean($mark->isRunning())
+                    ->isTrue()
+                ->boolean($mark->isPause())
+                    ->isTrue()
+
             ->assert('Restart mark after pause')
+
             ->when($SUT = $mark->start())
-                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
-                ->boolean($mark->isRunning())->isTrue()
-                ->boolean($mark->isPause())->isFalse()
+                ->object($SUT)
+                    ->isInstanceOf(CUT::class)
+                ->boolean($mark->isRunning())
+                    ->isTrue()
+                ->boolean($mark->isPause())
+                    ->isFalse()
+
             ->assert('Stop mark')
+
             ->when($SUT = $mark->stop())
-                ->object($SUT)->isInstanceOf('Hoa\Bench\Mark')
-                ->boolean($mark->isRunning())->isFalse()
-                ->boolean($mark->isPause())->isFalse()
-            ;
+                ->object($SUT)
+                    ->isInstanceOf(CUT::class)
+                ->boolean($mark->isRunning())
+                    ->isFalse()
+                ->boolean($mark->isPause())
+                    ->isFalse();
     }
 }
