@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Hoa
  *
@@ -41,9 +43,6 @@ namespace Hoa\Bench;
  *
  * The \Hoa\Bench class contains a collection of \Hoa\Bench\Mark.
  * Each mark can be start, pause, stop, reset, or compare to an other mark.
- *
- * @copyright  Copyright © 2007-2017 Hoa community
- * @license    New BSD License
  */
 class Mark
 {
@@ -57,7 +56,7 @@ class Mark
     /**
      * Mark ID.
      *
-     * @var string
+     * @var ?string
      */
     protected $_id      = null;
 
@@ -100,10 +99,8 @@ class Mark
 
     /**
      * Built a mark (and set the ID).
-     *
-     * @param   string  $id    The mark ID.
      */
-    public function __construct($id)
+    public function __construct(?string $id)
     {
         $this->setId($id);
 
@@ -112,11 +109,8 @@ class Mark
 
     /**
      * Set the mark ID.
-     *
-     * @param   string     $id    The mark ID.
-     * @return  string
      */
-    protected function setId($id)
+    protected function setId(?string $id): ?string
     {
         $old       = $this->_id;
         $this->_id = $id;
@@ -126,10 +120,8 @@ class Mark
 
     /**
      * Get the mark ID.
-     *
-     * @return  string
      */
-    public function getId()
+    public function getId(): ?string
     {
         return $this->_id;
     }
@@ -138,11 +130,8 @@ class Mark
      * Start the mark.
      * A mark can be started if it is in pause, stopped, or if it is the first start.
      * Else, an exception will be thrown.
-     *
-     * @return  \Hoa\Bench\Mark
-     * @throws  \Hoa\Bench\Exception
      */
-    public function start()
+    public function start(): self
     {
         if (true === $this->isStarted()) {
             if (false === $this->isPause()) {
@@ -171,13 +160,8 @@ class Mark
      * Stop the mark.
      * A mark can be stopped if it is in pause, or started. Else, an exception
      * will be thrown (or not, according to the $silent argument).
-     *
-     * @param   bool    $silent    If set to true and if the mark is not started,
-     *                             no exception will be thrown.
-     * @return  \Hoa\Bench\Mark
-     * @throws  \Hoa\Bench\Exception
      */
-    public function stop($silent = false)
+    public function stop(bool $silent = false): self
     {
         if (false === $this->isStarted()) {
             if (false === $silent) {
@@ -200,10 +184,8 @@ class Mark
 
     /**
      * Reset the mark.
-     *
-     * @return  \Hoa\Bench\Mark
      */
-    public function reset()
+    public function reset(): self
     {
         $this->start    = 0.0;
         $this->stop     = 0.0;
@@ -218,14 +200,8 @@ class Mark
      * Pause the mark.
      * A mark can be in pause if it is started. Else, an exception will be
      * thrown (or not, according to the $silent argument).
-     *
-     * @param   bool    $silent    If set to true and the mark is not started,
-     *                             no exception will be throw. Idem if the mark
-     *                             is in pause.
-     * @return  \Hoa\Bench\Mark
-     * @throws  \Hoa\Bench\Exception
      */
-    public function pause($silent = false)
+    public function pause(bool $silent = false): self
     {
         if (false === $this->isStarted()) {
             if (false === $silent) {
@@ -261,10 +237,8 @@ class Mark
      * Get the difference between $stop and $start.
      * If the mark is still running (it contains the pause case), the current
      * microtime  will be used in stay of $stop.
-     *
-     * @return  float
      */
-    public function diff()
+    public function diff(): float
     {
         if (false === $this->isStarted() || true === $this->isPause()) {
             return $this->stop - $this->start - $this->pause;
@@ -278,11 +252,8 @@ class Mark
      * $a op $b : return -1 if $a < $b, 0 if $a == $b, and 1 if $a > $b. We
      * compare the difference between $start and $stop, i.e. we call the diff()
      * method.
-     *
-     * @param   \Hoa\Bench\Mark  $mark    The mark to compare to.
-     * @return  int
      */
-    public function compareTo(Mark $mark)
+    public function compareTo(self $mark): int
     {
         $a = $this->diff();
         $b = $mark->diff();
@@ -300,39 +271,32 @@ class Mark
      * Check if the mark is running.
      *
      * @deprecated use `isStarted` instead
-     * @return  bool
      */
-    public function isRunning()
+    public function isRunning(): bool
     {
         return $this->isStarted();
     }
 
     /**
      * Check if the mark is started.
-     *
-     * @return  bool
      */
-    public function isStarted()
+    public function isStarted(): bool
     {
         return $this->_started;
     }
 
     /**
      * Check if the mark is in pause.
-     *
-     * @return  bool
      */
-    public function isPause()
+    public function isPause(): bool
     {
         return $this->_pause;
     }
 
     /**
      * Alias of the diff() method, but return a string, not a float.
-     *
-     * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->diff();
     }

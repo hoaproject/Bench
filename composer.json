@@ -24,6 +24,7 @@
         "source": "https://central.hoa-project.net/Resource/Library/Bench"
     },
     "require": {
+        "php"            : ">=7.1",
         "hoa/consistency": "~1.0",
         "hoa/exception"  : "~1.0",
         "hoa/iterator"   : "~2.0"
@@ -33,7 +34,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Hoa\\Bench\\": "."
+            "Hoa\\Bench\\"      : "Source",
+            "Hoa\\Bench\\Test\\": "Test"
         }
     },
     "extra": {

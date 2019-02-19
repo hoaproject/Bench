@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * Hoa
  *
@@ -42,15 +44,12 @@ use Hoa\Iterator;
 /**
  * Class \Hoa\Bench.
  *
- * The \Hoa\Bench class allows to manage marks easily, and to make some
+ * The Hoa\Bench class allows to manage marks easily, and to make some
  * statistics.
- * The \Hoa\Bench class implements Iterator and Countable interfaces to iterate
+ * The Hoa\Bench class implements Iterator and Countable interfaces to iterate
  * marks, or count the number of marks.
- *
- * @copyright  Copyright © 2007-2017 Hoa community
- * @license    New BSD License
  */
-class Bench implements Iterator, \Countable
+class Bench implements Iterator\Aggregate, \Countable
 {
     /**
      * Statistic : get the result.
@@ -85,12 +84,8 @@ class Bench implements Iterator, \Countable
     /**
      * Get a mark.
      * If the mark does not exist, it will be automatically create.
-     *
-     * @param   string  $id    The mark ID.
-     * @return  \Hoa\Bench\Mark
-     * @throws  \Hoa\Bench\Exception
      */
-    public function __get($id)
+    public function __get(string $id): Mark
     {
         if (true === empty(self::$_mark)) {
             $global                         = new Mark(Mark::GLOBAL_NAME);
@@ -111,22 +106,16 @@ class Bench implements Iterator, \Countable
     /**
      * Check if a mark exists.
      * Alias of the protected markExist method.
-     *
-     * @param   string  $id    The mark ID.
-     * @return  bool
      */
-    public function __isset($id)
+    public function __isset(string $id): bool
     {
         return $this->markExists($id);
     }
 
     /**
      * Destroy a mark.
-     *
-     * @param   string  $id    The mark ID.
-     * @return  void
      */
-    public function __unset($id)
+    public function __unset(string $id)
     {
         unset(self::$_mark[$id]);
 
@@ -135,8 +124,6 @@ class Bench implements Iterator, \Countable
 
     /**
      * Destroy all mark.
-     *
-     * @return  void
      */
     public function unsetAll()
     {
@@ -147,89 +134,26 @@ class Bench implements Iterator, \Countable
 
     /**
      * Check if a mark already exists.
-     *
-     * @param   string     $id    The mark ID.
-     * @return  bool
      */
-    protected function markExists($id)
+    protected function markExists(string $id): bool
     {
         return isset(self::$_mark[$id]);
     }
 
     /**
-     * Get the current mark for the iterator.
-     *
-     * @return  \Hoa\Bench\Mark
+     * Iterate over marks.
      */
-    public function current()
+    public function getIterator(): \Traversable
     {
-        return current(self::$_mark);
-    }
-
-    /**
-     * Get the current mark ID for the iterator.
-     *
-     * @return  string
-     */
-    public function key()
-    {
-        return key(self::$_mark);
-    }
-
-    /**
-     * Advance the internal mark collection pointer, and return the current
-     * mark.
-     *
-     * @return  \Hoa\Bench\Mark
-     */
-    public function next()
-    {
-        return next(self::$_mark);
-    }
-
-    /**
-     * Rewind the internal mark collection pointer, and return the first mark.
-     *
-     * @return  \Hoa\Bench\Mark
-     */
-    public function rewind()
-    {
-        return reset(self::$_mark);
-    }
-
-    /**
-     * Check if there is a current element after calls the rewind or the next
-     * methods.
-     *
-     * @return  bool
-     */
-    public function valid()
-    {
-        if (empty(self::$_mark)) {
-            return false;
+        foreach (self::$_mark as $mark) {
+            yield $mark;
         }
-
-        $key    = key(self::$_mark);
-        $return = (next(self::$_mark) ? true : false);
-        prev(self::$_mark);
-
-        if (false === $return) {
-            end(self::$_mark);
-
-            if ($key === key(self::$_mark)) {
-                $return = true;
-            }
-        }
-
-        return $return;
     }
 
     /**
      * Pause all marks and return only previously started tasks.
-     *
-     * @return  array
      */
-    public function pause()
+    public function pause(): array
     {
         $startedMarks = [];
 
@@ -248,9 +172,6 @@ class Bench implements Iterator, \Countable
 
     /**
      * Resume a specific set of marks.
-     *
-     * @param   array  $marks    The marks to resume.
-     * @return  void
      */
     public static function resume(array $marks)
     {
@@ -266,11 +187,8 @@ class Bench implements Iterator, \Countable
      * Used in the self::getStatistic() method, no in iterator.
      * A filter is a callable that will receive 3 values about a mark: ID, time
      * result, and time pourcent. The callable must return a boolean.
-     *
-     * @param   mixed  $callable    Callable.
-     * @return  void
      */
-    public function filter($callable)
+    public function filter($callable): self
     {
         $this->_filters[] = xcallable($callable);
 
@@ -279,10 +197,8 @@ class Bench implements Iterator, \Countable
 
     /**
      * Return all filters.
-     *
-     * @return  array
      */
-    public function getFilters()
+    public function getFilters(): array
     {
         return $this->_filters;
     }
@@ -292,12 +208,8 @@ class Bench implements Iterator, \Countable
      * Return an associative array : id => sub-array. The sub-array contains the
      * result time in second (given by the constant self::STAT_RESULT), and the
      * result pourcent (given by the constant self::START_POURCENT).
-     *
-     * @param   bool  $considerFilters    Whether we should consider filters or
-     *                                    not.
-     * @return  array
      */
-    public function getStatistic($considerFilters = true)
+    public function getStatistic(bool $considerFilters = true): array
     {
         if (empty(self::$_mark)) {
             return [];
@@ -333,10 +245,8 @@ class Bench implements Iterator, \Countable
 
     /**
      * Get the maximum, i.e. the longest mark in time.
-     *
-     * @return  \Hoa\Bench\Mark
      */
-    public function getLongest()
+    public function getLongest(): Mark
     {
         $max     = 0;
         $outMark = null;
@@ -353,12 +263,8 @@ class Bench implements Iterator, \Countable
 
     /**
      * Draw statistic in text mode.
-     *
-     * @param   int  $width    The graphic width.
-     * @return  string
-     * @throws  \Hoa\Bench\Exception
      */
-    public function drawStatistic($width = 80)
+    public function drawStatistic(int $width = 80): string
     {
         if (empty(self::$_mark)) {
             return '';
@@ -401,20 +307,16 @@ class Bench implements Iterator, \Countable
 
     /**
      * Count the number of mark.
-     *
-     * @return  int
      */
-    public function count()
+    public function count(): int
     {
         return count(self::$_mark);
     }
 
     /**
      * Alias of drawStatistic() method.
-     *
-     * @return  string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->drawStatistic();
     }
@@ -423,4 +325,4 @@ class Bench implements Iterator, \Countable
 /**
  * Flex entity.
  */
-Consistency::flexEntity('Hoa\Bench\Bench');
+Consistency::flexEntity(Bench::class);
